@@ -1,0 +1,61 @@
+<div class="jumbotron text-center white">
+        <h1 class="display-3">Welcome to Mentor on Demand!</h1>
+        <h4>Select any Skill from the below Drop-Box</h4>
+        <hr></div>
+        <div class="container">
+        <select [(ngModel)]="skillSearchKey" (ngModelChange)="searchBySkill()" class="form-control">
+                <option value disabled selected>Please select your Skill</option>
+                <option *ngFor="let skill of skillList" [value]="skill.name">{{skill.name}}</option>
+            </select>
+            <div class="row mt-5">
+                <div class="alert alert-danger my-auto mx-auto" *ngIf="skillSearchKey == null">
+                    You have not selected any technology
+                </div>
+                <div class="alert alert-danger my-auto mx-auto" *ngIf="mentorList?.length == 0">
+                    Oops, No mentor with knowledge in this technology found
+                </div>
+                <div *ngIf="mentorList?.length != 0 && skillSearchKey != null" class="row">
+                    <div class="card cardw ml-2 mr-2 mt-5 mb-5" *ngFor="let mentorskill of mentorList">
+                            <img class="card-img-top" src="https://www.w3schools.com/bootstrap4/img_avatar1.png" alt="Card image">
+                        <div class="card-body">
+                                <h4 class="card-title">{{mentorskill.mentorId.user.firstname}} {{mentorskill.mentorId.user.lastname}}</h4>
+                            <div class="card-text"><div class=" badge badge-success">Rating</div>
+                            <span class="float-right">{{mentorskill.rating}}<i class="material-icons">star</i></span></div>
+                            <div class="card-text"><div class="badge badge-primary">Experience</div>
+                            <span class="float-right">{{mentorskill.experience}} years</span></div>
+                            <button class="btn custbtn mt-3 mb-2" (click)="moreDetails(mentorskill.id)" *ngIf="this.authservice.loggedIn">See more Details</button>
+                            <div *ngIf="moreInfoMentorId == mentorskill.id">
+                                <div class="badge badge-secondary">Time-Slots available</div> 
+                                <span class="float-right">{{mentorskill.mentorId.slot}}</span>
+                                <div class="badge badge-secondary">Experience as a mentor</div> 
+                                <span class="float-right">{{mentorskill.mentorId.experience}} years</span>
+                                <div class="badge badge-info">Contact Number :</div>
+                                <span class="float-right">{{mentorskill.mentorId.user.contactnumber}}</span>
+                                <div>LinkedIn URL : <a [href]="mentorskill.mentorId.url" target="_blank">{{mentorskill.mentorId.url}}</a></div>
+                                <div *ngIf="this.authservice.loggedIn" class="row">
+                                        <div class="col-4"></div>
+                                        <button class="btn btn-success mx-auto col-4 my-2 form-control" (click)="requestTraining(mentorskill.id)">Request</button>
+                                        <div class="col-4"></div>
+                                        <form class="col-12" [formGroup]="requestTrainingForm" (submit)="this.submitRequestTraining(requestTrainingForm.value,mentorskill)" *ngIf="requestTrainingMentorId == mentorskill.id">
+                                            <div *ngIf="this.errorMessage!=null" class="alert-warning">
+                                                {{this.errorMessage}}
+                                            </div> 
+                                            <label for="startDate" class="mt-2">Start Date</label>
+                                            <input id="startDate" formControlName="startDate" type="date" placeholder="Select Start Date" class="form-control">
+                                            <div class="text-warning" *ngIf="startDate.touched && startDate.invalid && startDate.errors.required">Start Date is required</div>
+                                            <div class="text-warning" *ngIf="requestTrainingForm.get('startDate').hasError('nomatch')">Start Date cannot be before Today</div>
+                                            <div class="text-warning" *ngIf="requestTrainingForm.get('startDate').hasError('nomatch1')">Start Date cannot be after End Date</div>
+                                            <label for="endDate" class="mt-2">End Date</label>
+                                            <input id="endDate" formControlName="endDate" type="date" placeholder="Select End Date" class="form-control">
+                                            <div class="text-warning" *ngIf="endDate.touched && endDate.invalid && endDate.errors.required">End Date is required</div>
+                                            <div class="text-warning" *ngIf="requestTrainingForm.get('endDate').hasError('nomatch')">End Date cannot be before Today</div>
+                                            <div class="text-warning" *ngIf="requestTrainingForm.get('endDate').hasError('nomatch1')">End Date cannot be before Start Date</div>
+                                            <button class="btn btn-danger form-control my-2" type="submit" [disabled]="!requestTrainingForm.valid">Send Request</button>
+                                        </form>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
